@@ -84,21 +84,13 @@ class _MyHomePageState extends State<MyHomePage> {
             BottomNavigationBarItem( icon: Icon(Icons.add_card_rounded), label: 'Pay' ),],
           onTap:(btnIndex){  }  ),
       body: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,   // center, start, end, spaceEvenly, spaceBetween, spaceAround
-          children: <Widget>[
-            Checkbox(onChanged: (bool ?b){ }, value:isChecked),
-            Text("Check this to enable"),
-            ElevatedButton(onPressed: buttonClicked,  // Lambda function, anonymous function
-                child: Text('Button 1')),
-            ElevatedButton(onPressed: buttonClicked,  // Lambda function, anonymous function
-                child: Text('Button 2')),
-            ElevatedButton(onPressed: buttonClicked,  // Lambda function, anonymous function
-                child: Text('Button 3')),
-            ElevatedButton(onPressed: buttonClicked,  // Lambda function, anonymous function
-                child: Text('Button 4')),
-          ],
-        ),
+        child:
+        Stack(
+          alignment: AlignmentDirectional.bottomCenter,
+            children: <Widget>[
+              Image.asset("images/algonquin.jpg"),
+              Text("This is Algonquin College", style: TextStyle(fontSize: 30.0, backgroundColor:Colors.white ),)
+            ])
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
