@@ -11,12 +11,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Flutter Demo Home Page By Ryan Xu'),
     );
   }
 }
@@ -39,12 +40,12 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {  //loading page
     super.initState();
-    _controller = TextEditingController();
+    _controller = TextEditingController(); // Initialize the controller here
   }
 
   @override
   void dispose() {  // unloading page
-    _controller.dispose();
+    _controller.dispose();  // Dispose the controller to free up resources
     super.dispose();
   }
 
@@ -58,29 +59,44 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        // backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Colors.yellowAccent,
+        // title: Text(widget.title),
+          title: Text("Demo by Ryan Xu"),
+        actions:[
+          OutlinedButton(onPressed:(){ }, child:Text("Save"),
+              style: OutlinedButton.styleFrom(backgroundColor: Colors.blue)),
+          OutlinedButton(onPressed:(){ }, child:Text("Delete"),
+              style: OutlinedButton.styleFrom(backgroundColor: Colors.red)),
+        ]
       ),
+      drawer:Drawer(child:
+       Column ( mainAxisAlignment: MainAxisAlignment.spaceAround,
+       children: <Widget> [
+         Text("Hi, there"),
+         Text("Test line 2"),
+         Text("Test line 3"),
+        ])),
+      bottomNavigationBar: BottomNavigationBar(
+          items: [
+            BottomNavigationBarItem( icon: Icon(Icons.camera), label: 'Camera'  ),
+            BottomNavigationBarItem( icon: Icon(Icons.add_call), label: 'Phone' ),
+            BottomNavigationBarItem( icon: Icon(Icons.add_card_rounded), label: 'Pay' ),],
+          onTap:(btnIndex){  }  ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,   // center, start, end, spaceEvenly, spaceBetween, spaceAround
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',style: TextStyle(fontSize: 20)
-            ),
-            Text('$_counter', style: Theme.of(context).textTheme.headlineMedium, ),
-            Image.asset("images/algonquin.jpg", width:300.0, height:200.0),
-
-            // ElevatedButton(onPressed:buttonClicked, child: Text("Click me")),
-            ElevatedButton(onPressed:buttonClicked, child: Image.asset("images/algonquin.jpg", width:200.0, height:150.0)),
-            Checkbox(value: isChecked, onChanged: checkBoxClicked),
-            Switch(value: isChecked, onChanged: checkBoxClicked),
-            TextField(controller: _controller,
-                decoration: InputDecoration(
-                hintText:"Type here",
-                border: OutlineInputBorder(),
-                labelText: "First name"
-            )),
+            Checkbox(onChanged: (bool ?b){ }, value:isChecked),
+            Text("Check this to enable"),
+            ElevatedButton(onPressed: buttonClicked,  // Lambda function, anonymous function
+                child: Text('Button 1')),
+            ElevatedButton(onPressed: buttonClicked,  // Lambda function, anonymous function
+                child: Text('Button 2')),
+            ElevatedButton(onPressed: buttonClicked,  // Lambda function, anonymous function
+                child: Text('Button 3')),
+            ElevatedButton(onPressed: buttonClicked,  // Lambda function, anonymous function
+                child: Text('Button 4')),
           ],
         ),
       ),
@@ -93,11 +109,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // function for checkBoxClicked
-  void checkBoxClicked(bool ? newVal) // ? newVal is potentially null
+  void checkBoxClicked(bool? newVal) // ? newVal is potentially null
   {
     if(newVal != null) {
       setState((){
-        isChecked = newVal!;  // update the GUI, ! assert not null
+        isChecked = newVal;  // update the GUI, ! assert not null
       });
     }
   }
@@ -105,6 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // function for buttonClicked
   void buttonClicked(){
       var userTyped = _controller.value.text;
+      _controller.text = "You typed: " + userTyped;
   }
 
   // function to set NewValue
