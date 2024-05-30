@@ -62,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         backgroundColor: Colors.yellowAccent,
         // title: Text(widget.title),
-          title: Text("Demo by Ryan Xu"),
+          title: Text("Week 4 Lectures"),
         actions:[
           OutlinedButton(onPressed:(){ }, child:Text("Save"),
               style: OutlinedButton.styleFrom(backgroundColor: Colors.blue)),
@@ -88,14 +88,9 @@ class _MyHomePageState extends State<MyHomePage> {
             // crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("One-pan skillet Cookie", style: TextStyle(fontSize: 30.0, color: Colors.redAccent),),
-              Text("Ingredient List"),
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.star), Text("1 stick [8 TBSP] Unsalted butter")],),
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.star), Text("1/2 cup granulated sugar")],),
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.star), Text("1/2 C. LIGHT BROWN SUGAR")],),
-              Row(  children: [Icon(Icons.star), Text("1 TSP. VANILLA EXTRACT")],),
-              Row(  children: [Icon(Icons.star), Text("1 EGG")],),
-              Row(  children: [Icon(Icons.star), Text("1 1/2 C. UNBLEACHED ALL-PURPOSE FLOUR")],),
+              Text("Click the button below", style: TextStyle(fontSize: 30.0, color: Colors.redAccent),),
+              ElevatedButton( onPressed: buttonClicked, child: Text("Click here"),)
+
         ])
       ),
       floatingActionButton: FloatingActionButton(
@@ -118,8 +113,38 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // function for buttonClicked
   void buttonClicked(){
-      var userTyped = _controller.value.text;
-      _controller.text = "You typed: " + userTyped;
+      // var userTyped = _controller.value.text;
+      // _controller.text = "You typed: " + userTyped;
+
+      // var mySB = SnackBar( content:
+      //   Row(
+      //     children: [Image.asset("images/algonquin.jpg", width: 100, height: 100),
+      //     Text('Yay! A SnackBar!'), ],
+      //   ),
+      //     action:SnackBarAction( label:'Ok', onPressed: () {  } ),
+      // );
+      //
+      // ScaffoldMessenger.of(context).showSnackBar(mySB); // This show the SnackBAr
+
+    Widget getText() {
+      return Text("I'm a text"); //simple retrun /getter funtion
+    }
+    Widget getOtherText() => Text("I'm another Text");
+
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) =>
+          AlertDialog(
+            title: const Text('AlertDialog Title'),
+            content: const Text('AlertDialog description'),
+            actions: <Widget>[
+              ElevatedButton(child:Text("Ok"), onPressed: (){},),
+              FilledButton(onPressed: (){ Navigator.pop(context);}, child: Text("Cancel")),
+              OutlinedButton(onPressed: (){ Navigator.pop(context);}, child: Text("Delete")),
+              Image.asset("images/algonquin.jpg", width:100, height: 100),
+          ],
+      ),
+    );
   }
 
   // function to set NewValue
