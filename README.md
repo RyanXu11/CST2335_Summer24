@@ -1,6 +1,6 @@
 # cst2335_summer24
 
-A new Flutter project.
+A new Flutter project for lectures in summer 2024.
 
 ## Getting Started
 
