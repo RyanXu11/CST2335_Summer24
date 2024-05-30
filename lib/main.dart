@@ -84,13 +84,19 @@ class _MyHomePageState extends State<MyHomePage> {
             BottomNavigationBarItem( icon: Icon(Icons.add_card_rounded), label: 'Pay' ),],
           onTap:(btnIndex){  }  ),
       body: Center(
-        child:
-        Stack(
-          alignment: AlignmentDirectional.bottomCenter,
-            children: <Widget>[
-              Image.asset("images/algonquin.jpg"),
-              Text("This is Algonquin College", style: TextStyle(fontSize: 30.0, backgroundColor:Colors.white ),)
-            ])
+        child: Column(
+            // crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("One-pan skillet Cookie", style: TextStyle(fontSize: 30.0, color: Colors.redAccent),),
+              Text("Ingredient List"),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.star), Text("1 stick [8 TBSP] Unsalted butter")],),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.star), Text("1/2 cup granulated sugar")],),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.star), Text("1/2 C. LIGHT BROWN SUGAR")],),
+              Row(  children: [Icon(Icons.star), Text("1 TSP. VANILLA EXTRACT")],),
+              Row(  children: [Icon(Icons.star), Text("1 EGG")],),
+              Row(  children: [Icon(Icons.star), Text("1 1/2 C. UNBLEACHED ALL-PURPOSE FLOUR")],),
+        ])
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
