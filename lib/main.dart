@@ -37,11 +37,11 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   bool isChecked = false;
   late TextEditingController _controller; // for user Strings
-  late TextEditingController _controller2; // for user Strings
-  late SharedPreferences storedData;
+  // late TextEditingController _controller2; // for user Strings
+  // late SharedPreferences storedData;
+  late EncryptedSharedPreferences storedData;
     //initialize later, but not null
-  // storeData = SharedPreferences();
-  // storeData = EncryptedSharedPreferences();
+
 
   //Asynchronous
   // void loadSavedVariables() async{
@@ -73,19 +73,26 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {  //loading page
     super.initState();
     _controller = TextEditingController(); // Initialize the controller here
-    _controller2 = TextEditingController();
+    // _controller2 = TextEditingController();
 
-    SharedPreferences.getInstance().then((thePrefs){
-      // at this point, the file (thePrefs) have been loaded
-      storedData = thePrefs;
-
-      var savedUserName = storedData.getString("UserName"); //Nullable string
-
+    // storedData = SharedPreferences();
+    storedData = EncryptedSharedPreferences();
+    storedData.getString("UserName").then((savedUserName){
       if(savedUserName != null){
         _controller.text = savedUserName;
       }
-
     });
+
+    // SharedPreferences.getInstance().then((thePrefs){
+    //   // at this point, the file (thePrefs) have been loaded
+    //   storedData = thePrefs;
+    //
+    //   var savedUserName = storedData.getString("UserName"); //Nullable string
+    //
+    //   if(savedUserName != null){
+    //     _controller.text = savedUserName;
+    //   }
+    // });
 
   }
 
