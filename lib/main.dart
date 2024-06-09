@@ -1,6 +1,8 @@
+import 'package:cst2335_summer24/DataRepository.dart';
+import 'package:cst2335_summer24/OtherPage.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,14 +14,19 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp(  // this is where we put the routes/page trasitions;
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
+      routes: {
+        '/OtherPage' : (context) => OtherPage(),
+        '/': (context) => MyHomePage(title: 'Flutter Demo Home Page By Ryan Xu'),
+      },
+      initialRoute: '/', //initial is the home page
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page By Ryan Xu'),
+      // home: const MyHomePage(title: 'Flutter Demo Home Page By Ryan Xu'), // this line replaced by initialRoute
     );
   }
 }
@@ -75,6 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _controller = TextEditingController(); // Initialize the controller here
     // _controller2 = TextEditingController();
 
+    DataRepository.loadVariables();
     // storedData = SharedPreferences();
     storedData = EncryptedSharedPreferences();
     storedData.getString("UserName").then((savedUserName){
@@ -123,7 +131,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         backgroundColor: Colors.yellowAccent,
         // title: Text(widget.title),
-          title: Text("Week 4 Lectures"),
+          title: Text("Week 5 Lectures"),
         actions:[
           OutlinedButton(onPressed:(){ }, child:Text("Save"),
               style: OutlinedButton.styleFrom(backgroundColor: Colors.blue)),
@@ -153,7 +161,7 @@ class _MyHomePageState extends State<MyHomePage> {
               getOtherText(),
               Text("Click the button below", style: TextStyle(fontSize: 30.0, color: Colors.redAccent),),
               ElevatedButton( onPressed: buttonClicked, child: Text("Click here"),),
-
+              Padding(padding: EdgeInsets.fromLTRB(10, 100, 100, 10)),
               TextField(controller: _controller,
                 decoration: InputDecoration(
                 hintText: "Type here",
@@ -188,47 +196,49 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // function for buttonClicked
   void buttonClicked(){
-      // var userTyped = _controller.value.text;
+      var userTyped = _controller.value.text;
       // _controller.text = "You typed: " + userTyped;
 
-      var mySB = SnackBar( content:
-        Row(
-          children: [Image.asset("images/algonquin.jpg", width: 100, height: 100),
-          Text('Yay! A SnackBar!'), ],
-        ),
-          action:SnackBarAction( label:'Ok', onPressed: () {  } ),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(mySB); // This show the SnackBAr
 
-    showDialog<String>(
-      context: context,
-      builder: (BuildContext context) =>
-          AlertDialog(
-            title: const Text('Save data'),
-            content: const Text('Do you want to save your information?'),
-            actions: <Widget>[
-              ElevatedButton(child:Text("Ok"), onPressed: (){
-                var userTyped = _controller.value.text;
-                storedData.setString("UserName", userTyped);
+    Navigator.pushNamed( context,"/OtherPage" ); //This NamedRoute string must be one of the named states
+      // var mySB = SnackBar( content:
+      //   Row(
+      //     children: [Image.asset("images/algonquin.jpg", width: 100, height: 100),
+      //     Text('Yay! A SnackBar!'), ],
+      //   ),
+      //     action:SnackBarAction( label:'Ok', onPressed: () {  } ),
+      // );
+      // ScaffoldMessenger.of(context).showSnackBar(mySB); // This show the SnackBAr
 
-                Navigator.pop(context);
-
-              },),
-              // ElevatedButton(onPressed: (){ Navigator.pop(context);}, child: Text("Ok")),
-              FilledButton(onPressed: (){ Navigator.pop(context);}, child: Text("Cancel")),
-              OutlinedButton(onPressed: (){ Navigator.pop(context);}, child: Text("Delete")),
-              Image.asset("images/algonquin.jpg", width:100, height: 100),
-          ],
-      ),
-    );
+    // showDialog<String>(
+    //   context: context,
+    //   builder: (BuildContext context) =>
+    //       AlertDialog(
+    //         title: const Text('Save data'),
+    //         content: const Text('Do you want to save your information?'),
+    //         actions: <Widget>[
+    //           ElevatedButton(child:Text("Ok"), onPressed: (){
+    //             var userTyped = _controller.value.text;
+    //             storedData.setString("UserName", userTyped);
+    //
+    //             Navigator.pop(context);
+    //
+    //           },),
+    //           // ElevatedButton(onPressed: (){ Navigator.pop(context);}, child: Text("Ok")),
+    //           FilledButton(onPressed: (){ Navigator.pop(context);}, child: Text("Cancel")),
+    //           OutlinedButton(onPressed: (){ Navigator.pop(context);}, child: Text("Delete")),
+    //           Image.asset("images/algonquin.jpg", width:100, height: 100),
+    //       ],
+    //   ),
+    // );
   }
 
   // function to set NewValue
-  void setNewValue(double newVal){
-    setState(){
-
-    }
-  }
+  // void setNewValue(double newVal){
+  //   setState(){
+  //
+  //   }
+  // }
 
 
 
