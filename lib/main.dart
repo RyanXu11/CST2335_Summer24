@@ -1,13 +1,16 @@
+import 'package:cst2335_summer24/ToDoDatabase.dart';
+import 'package:cst2335_summer24/ToDoItem.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'OtherPage.dart';
-import 'DataRepository.dart';
+
 
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart';  // kIsWeb
+import 'package:flutter/foundation.dart';
+
+import 'ToDoDAO.dart';  // kIsWeb
 
 
 void main() {
@@ -26,23 +29,13 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    // if(!kIsWeb) {
-    //   // Get the operating system as a string
-    //   var myOS = Platform.operatingSystem;
-    //
-    //   if(Platform.isWindows){
-    //
-    //   } else if(Platform.isAndroid) {
-    //
-    //   }
-    // }
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       //list all the pages:
       routes: {
         //Keys:         //values
-        '/pageOne'   :   (context) => MyHomePage(title: 'Week 7 Lecture '),
-        '/pageTwo'  :    (context) { return OtherPage(); }
+        '/pageOne'   :   (context) => MyHomePage(title: 'Week 9 Lecture: SQL Floor'),
+        // '/pageTwo'  :    (context) { return OtherPage(); }
 
       },
       title: 'Flutter Demo',
@@ -65,123 +58,127 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late VideoPlayerController _controller;
-  late Future<void> _initializeVideoPlayerFuture;
+  var words = <ToDoItem>[];
+  var isChecked = false;
+  late TextEditingController _controller; // late means initialize later, but not null
+  late TextEditingController _controller2;
+  late ToDoDAO myDAO;
 
   @override
   void initState() {
     // initialize object, onloaded in HTML
     super.initState();
 
-    // Create and store the VideoPlayerController. The VideoPlayerController
-    _controller = VideoPlayerController.networkUrl(
-      Uri.parse(
-        'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
-      ),
-    );
-    _initializeVideoPlayerFuture = _controller.initialize();
+    $FloorToDoDatabase.databaseBuilder('app_database.db').build().then( (database) async {
+
+      myDAO = database.getDao; // now you can query;
+      // List<ToDoItem> items = await myDAO.getAllItems();
+
+      myDAO.getAllItems().then ( (listOfItems) {
+
+        setState(() {
+          words.addAll( listOfItems ); // add all items from listOfItems into words
+        });
+      });
+    });  // read the database
+
+
+    _controller = TextEditingController();
+    _controller2 = TextEditingController();
+
   }
 
   @override
   void dispose() { //unloading the page
     super.dispose();
-    // Ensure the _controllerV dispose
     _controller.dispose();
+    _controller2.dispose();
   }
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Wrap the play or pause in a call to `setState`. This ensures the
-          // correct icon is shown.
-          setState(() {
-            // If the video is playing, pause it.
-            if (_controller.value.isPlaying) {
-              _controller.pause();
-            } else {
-              // If the video is paused, play it.
-              _controller.play();
-            }
-          });
-        },
-        // Display the correct icon depending on the state of the player.
-        child: Icon(
-          _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
-        ),
-      ),
       appBar: AppBar(backgroundColor: Theme.of(context).colorScheme.inversePrimary,title: Text(widget.title)),
       body: Center(
         child:
-         Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            // Flexible(child: // or Expanded
-            Expanded(
-              child:
-                FutureBuilder(
-                  future: _initializeVideoPlayerFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done) {
-                      // If the VideoPlayerController has finished initialization, use
-                      // the data it provides to limit the aspect ratio of the video.
-                      return AspectRatio(
-                        aspectRatio: _controller.value.aspectRatio,
-                        // Use the VideoPlayer widget to display the video.
-                        child: VideoPlayer(_controller),
-                      );
-                    } else {
-                      // If the VideoPlayerController is still initializing, show a
-                      // loading spinner.
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              // Flexible(child: // or Expanded
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ElevatedButton(child: Text("Add"), onPressed: (){
+                    setState(() {
+                      var newItem = ToDoItem(ToDoItem.ID++, _controller.value.text);
+
+                      words.add(newItem);  // put it on the screen
+
+                      // add to the database:
+                      myDAO.insertItem(newItem);
+
+                      _controller.text = "";
+                    });
                   },),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CircleAvatar(radius: 50,
-                  backgroundImage: AssetImage('images/algonquin.jpg'),
-                ),
-                ClipOval(
-                  child: Image.network(
-                    'https://img.icons8.com/?size=48&id=gQ4NaXzMSLil&format=png',
-                    width: 50,
-                    height: 70,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(left: 50),
-                  child: FilledButton(onPressed:() { }, child: Text("Click me"),),),
-                Expanded(
-                    flex: 1,
-                    child:
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(5, 30, 20, 20),
-                      child: FilledButton(onPressed: (){ }, child: Text("Click again"),),
-                    ),
-                ),
-                Expanded(
-                    flex: 1,
-                    child: FilledButton(onPressed: (){ }, child: Text("Click Double")),
-                ),
-                Expanded(
-                    flex: 2,
-                    child: FilledButton(onPressed: (){ }, child: Text("Click Triple")),
-                ),
-                CachedNetworkImage(
-                  imageUrl: 'https://img.icons8.com/?size=48&id=gQ4NaXzMSLil&format=png',
-                  placeholder: (context, url) => CircularProgressIndicator(),
-                  errorWidget: (context, url, error) => Text("Sorry, the image is not available"),
-                ),
+                Expanded(child: TextField(controller: _controller, decoration: InputDecoration(border: OutlineInputBorder(), hintText: 'Enter a todo item'),)),
+
               ],),
-          ],),
-        ),
+
+              Expanded(child:
+              (words.isNotEmpty)?
+              ListView.builder(
+                itemCount: words.length,
+                itemBuilder: (context, rowNum) {
+                  return
+                    GestureDetector(child:
+                    Row( mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [Text("Row number: $rowNum"), Text(words[rowNum].toDoMesage)]
+                    ),
+                      onLongPress: () {
+                        showDialog<void>(
+                          context: context,
+                          barrierDismissible: false, // user must tap button!
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('AlertDialog Title'),
+                              content: const SingleChildScrollView(
+                                child: ListBody(
+                                  children: <Widget>[
+                                    Text('Delete'),
+                                    Text('Would you like to delete this message?'),
+                                  ],
+                                ),
+                              ),
+                              actions: <Widget>[
+                                TextButton(child:const Text('Cancel'), onPressed: (){
+                                  Navigator.of(context).pop();
+                                }),
+                                TextButton(
+                                  child: const Text('Ok'),
+                                  onPressed: () {
+                                    setState(() {
+
+                                      var itm = words[rowNum];
+                                      myDAO.deleteItem(itm);
+
+                                      words.removeAt(rowNum); // it's gone after this line
+
+                                    });
+                                    Navigator.of(context).pop();
+                                  },
+                                )
+                              ],
+                            );
+                          },
+                        );},
+                    ); }
+            )
+                :const Center(child: Text("There are no items") )
+            )
+          ],
+         ),
+      )
     );
   }
 
@@ -195,9 +192,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
 }
 
-// flutter pub add flutter_launcher_icons
-// flutter pub run flutter_launcher_icons
-// flutter pub add video_player
+// flutter pub add floor_generator
+// flutter pub add -d build_runner
+
+// flutter pub get  // after modified the pubspec.yaml
+
 // <uses-permission android:name="android.permission.INTERNET" />  // add to android/app/src/main/AndroidMainfest.xml
 
-// https://icons8.com/icons/set/app
