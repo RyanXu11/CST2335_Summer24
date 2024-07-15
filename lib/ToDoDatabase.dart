@@ -13,7 +13,6 @@ part 'ToDoDatabase.g.dart'; // the generated code will be there
 abstract class ToDoDatabase extends FloorDatabase {
 
   // get interface to database
-  // ToDoDAO getDao();  // 1 function for giving you access to insert, delete, update, query
   ToDoDAO get getDao;  // 1 variable for giving you access to insert, delete, update, query
 }
 
