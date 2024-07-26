@@ -1,0 +1,8 @@
+{
+  "title"                     : "FLUTTER语言演示",
+  "string"                    : "感人的!",
+  "string_with_interpolation" : "嘿$name，你好吗？",
+  "add_key"                   : "添加",
+  "enter_todo"                : "请输入待办事项",
+  "no_items"                  : "没有事项"
+}

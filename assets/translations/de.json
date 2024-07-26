@@ -1,0 +1,8 @@
+{
+  "string"                    : "Beeindruckend!",
+  "string_with_interpolation" : "Hey $name, wie geht es dir?",
+  "add_key"                   : "Einfugen",
+  "enter_todo"                : "Geben sie ein wort",
+  "no_items"                  : "Es gibt keinen",
+  "title"                     : "Demo der FLUTTER-Sprache"
+}

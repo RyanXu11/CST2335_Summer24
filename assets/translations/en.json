@@ -1,0 +1,8 @@
+{
+  "title"                     : "FLUTTER language demo",
+  "string"                    : "Impressive!",
+  "string_with_interpolation" : "Hey $name, how are you?",
+  "add_key"                   : "Add",
+  "enter_todo"                : "Enter a to do item",
+  "no_items"                  : "There are no items"
+}

@@ -1,247 +1,250 @@
-import 'package:cst2335_summer24/ToDoDatabase.dart';
-import 'package:cst2335_summer24/ToDoItem.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
-
-import 'package:cached_network_image/cached_network_image.dart';
-
-import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart';
-
-import 'ToDoDAO.dart'; // kIsWeb
-
+import 'AppLocalizations.dart';
 
 void main() {
-  // Or, use a predicate getter.
-  // if (Platform.isMacOS) {
-  //   print('is a Mac');
-  // } else {
-  //   print('is not a Mac');
-  // }
   runApp(const MyApp());
 }
-
-class MyApp extends StatelessWidget {
+//chande to StatfulWidget because the language changes
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  _MyAppState createState() {
+    return _MyAppState();
+  }
+
+  static void setLocale(BuildContext context, Locale newLocale) async {
+    _MyAppState? state = context.findAncestorStateOfType<_MyAppState>();
+    state?.changeLanguage(newLocale);
+  }
+
+}
+
+
+class _MyAppState extends State<MyApp>
+{
+
+  var _locale = Locale("en", "CA"); //default is english from Canada
+
+  void changeLanguage(Locale newLanguage)
+  {
+    setState(() {
+      _locale = newLanguage; //set app to new language, and redraw
+    });
+
+  }
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    //add your supported locales:
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      //list all the pages:
-      routes: {
-        //Keys:         //values
-        '/pageOne': (context) => MyHomePage(title: 'Week 9 Lecture: SQL Floor'),
-        // '/pageTwo'  :    (context) { return OtherPage(); }
+      supportedLocales:  const<Locale> [
+        Locale("en", "CA"),
+        Locale("de", "DE"),//country doesn't matter in this case
+        Locale("fr", "CA"),
+        Locale("zh", "CN")
+      ] ,
 
-      },
-      title: 'Flutter Demo',
+      localizationsDelegates: const[
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      locale: _locale, //default is "en", "CA" from above
+      title: AppLocalizations.of(context)?.translate('title') ?? 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      initialRoute: '/pageOne',
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({super.key});
 
-  final String title;
+  // final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MyHomePage> createState() => MyHomePageState();
+
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+// _ makes it private, not generated in documentation
+class MyHomePageState extends State<MyHomePage> {
 
+  //member variables:
+
+  /** This holds our list of to do items */
+  var words = <String>[];
+
+  /// This lets the user type in a new to do item:
   late TextEditingController _controller; // late means initialize later, but not null
-  var listObjects = <String>[];
 
-  String? selectedItem = null; // Either a string or null
+  /// This holds the item that a user selects:
+  String? selectedItem = null;
 
-  @override
+
+  @override //this wasn't written by you
   void initState() {
     // initialize object, onloaded in HTML
     super.initState();
-
     _controller = TextEditingController();
+
   }
 
   @override
-  void dispose() {
-    //unloading the page
+  void dispose() { //unloading the page
     super.dispose();
-    _controller.dispose();
+    _controller.dispose(); //delete memory of _controller
   }
 
-  Widget ToDoList() {
-    return Column( mainAxisAlignment: MainAxisAlignment.start,
-      children: [
+  /// This function displays a list of to-do items created by the user
+  Widget ToDoList(){
+    return Center( child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
         Row(children: [
-          ElevatedButton(child: Text("Add this"), onPressed: () {
+          ElevatedButton(child:Text(AppLocalizations.of(context)!.translate('add_key')!), onPressed: () {
             setState(() {
-              var whatWasTyped = _controller.value.text;
-              listObjects.add(whatWasTyped); //insert to ArrayList
-                // clear the text
-                _controller.text = "";
-            },);
-          },),
-            // SizedBox(width: 20),
-          Padding(padding: const EdgeInsets.symmetric(horizontal: 10),),
-          Expanded(child: TextField(controller: _controller,
-              decoration: InputDecoration(
-                hintText: "Type here",
-                border: OutlineInputBorder(),
-                labelText: "Add message"
-              ),),
-            ),
-        ],),
-        if(listObjects.isEmpty)
-          Column( children: [
-            SizedBox(height: 20), // Add some space above the Text
-            Text('There are no items in the List.'),
-            ],)
-        else
-          Expanded(  // makes the child as large as possible, taking up whole screen
-            child:
-              ListView.builder(
-                itemCount: listObjects.length,// length of array as row number
-                itemBuilder: (context, rowNumber) {
-                  return
-                    GestureDetector(
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 100.0), // leftside
-                        child:Text(
-                          "Row ${rowNumber} : " + listObjects[rowNumber],
-                          style:TextStyle(fontSize: 20),
-                        ),
-                      ),
-                      onTap:() {
-                        setState(() {
-                          selectedItem = listObjects[rowNumber];  // make it selected
-                        });
-                      },
-                      onLongPress: (){
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text('Confirm Deletion'),
-                              content: Text('Are you sure you want to delete Row ${rowNumber}?'),
-                              actions: <Widget>[
-                                TextButton(
-                                  child: Text('No'),
-                                  onPressed: () {
-                                    Navigator.of(context).pop(); // Close the dialog
-                                  },
-                                ),
-                                TextButton(
-                                  child: Text('Yes'),
-                                  onPressed: () {
-                                    var snackBar = SnackBar(
-                                        content: Text('Row: ${rowNumber} you tapped has been deleted.'),
-                                        duration: Duration(seconds: 1),
-                                      );
-                                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                                    setState(() {
-                                        listObjects.removeAt(rowNumber); // Remove the object
-                                    });
-                                    Navigator.of(context).pop(); // Close the dialog
-                                  },
-                                ),
-                              ],
-                            );
-                        },);
+              var newItem = _controller.value.text;
+              words.add(newItem);
+              _controller.text = "";
+            });
+          }   ),
+          Expanded(child: TextField(controller: _controller, decoration: InputDecoration(border: OutlineInputBorder(),
+
+              hintText: AppLocalizations.of(context)!.translate('enter_todo')!   ))),
+
+        ]),
+        Expanded(child:
+
+        (words.isNotEmpty)?
+        ListView.builder(
+            itemCount: words.length,
+            itemBuilder: (context, rowNum) {
+              return
+                GestureDetector(child:
+                Row( mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [Text("Row number: $rowNum"), Text(words[rowNum])]
+                ),
+                  onTap: (){
+                    setState(() {
+                      //which one was selected:
+                      selectedItem =  words[rowNum]; //no longer null
                     });
-                }),
-          )
-        ]);
-    }
 
-    Widget DetailsPage(){
-      if (selectedItem == null)
-        return Text("");  // so this compiles, nothing shows
+
+                  },
+
+                  onLongPress: () {
+                    showDialog<void>(
+                      context: context,
+                      barrierDismissible: false, // user must tap button!
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('AlertDialog Title'),
+                          content: const SingleChildScrollView(
+                            child: ListBody(
+                              children: <Widget>[
+                                Text('Delete'),
+                                Text('Would you like to delete this message?'),
+                              ],
+                            ),
+                          ),
+
+                          actions: <Widget>[
+                            TextButton(child:const Text('Cancel'), onPressed: (){ }),
+                            TextButton(
+                              child: const Text('Ok'),
+                              onPressed: () {
+                                setState(() {
+                                  words.removeAt(rowNum);
+                                });
+                                Navigator.of(context).pop();
+                              },
+                            )
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ); }
+        )
+            : Center(child:Column(children:
+        [Text( AppLocalizations.of(context)!.translate('no_items')!)],)  )
+        )
+
+      ],
+    ),
+    );
+  }
+
+  /// This function returns a Widget that shows details about the selected item
+  Widget DetailsPage(){
+    if(selectedItem == null)
+      return Column(children: [Text("Nothing is selected")],);//something that returns
+    else
+    {               //    !  means assert non-null
+      return  Column(children: [ Text( selectedItem!  ) ,//selectedItem is String
+        ElevatedButton(onPressed: () {
+          setState(() {
+            selectedItem = null;
+          });
+        }, child: Text("Go back")  )]);
+    }
+  }
+
+
+  /// This adapts the layout according to the device screen
+  Widget responsiveLayout()
+  {
+    var size = MediaQuery.of(context).size;
+    var height = size.height;
+    var width = size.width;
+
+    if((width > height) && (width > 720)) //landscape mode
+        {
+      return  Row(children:[
+        Expanded(flex:1,  child:ToDoList()),
+        Expanded(flex:3,  child:DetailsPage() )   ]);
+
+    }
+    else //portrait mode
+        {
+      if(selectedItem == null)
+        return ToDoList();  //nothing was selected
       else
-        return Column(children: [ Text("Selected item = ${selectedItem}"),
-                      // OutlinedButton(onPressed: () {
-                      //   setState(() { selectedItem=null;  // redraw the GUI
-                      //   });
-                      // }, child: Text("Go back")) // line 171-174 replaced by 222-224
-
-        ]);
+        return DetailsPage();//show the details
     }
+  }
 
-    Widget responsiveLayout(){
-      var size = MediaQuery.of(context).size;
-      var height = size.height;
-      var width = size.width;
-
-      //landscape or tablet layout
-      if ((width>height) && (width > 720)) //screen is wide enough (1920 * 1024
-      //room to put list on left side:
-        {
-          return Row(children: [
-            Expanded(flex: 1, child: ToDoList()),  // takes 1/(1+3) of available width
-            Expanded(flex: 3, child: DetailsPage()),    // takes 3/(1+3) of available width
-          ]);
-      }
-      else //portrait
-        {
-          if(selectedItem == null)
-            return ToDoList();
-          else
-            return DetailsPage();
-      }
-    }
-
-
-    @override
-    Widget build(BuildContext context) {
-
-    // var size = MediaQuery.of(context).size;
-    // var height = size.height;
-    // var width = size.width;
-    //
-    // var myBody = ((width>height) && (width > 720))? //screen is wide enough (1920 * 1024
-    //   //room to put list on left side:
-    //     Row(children: [ Expanded(flex: 1, child: ToDoList()),
-    //                     Expanded(flex: 3, child: DetailsPage()) ])
-    // : // portrait
-    //     ToDoList();  // List is the whole page
-
-      return Scaffold(
+  @override
+  Widget build(BuildContext context) {
+    String title = AppLocalizations.of(context)!.translate('title') ?? 'Default Title';
+    return Scaffold(
         appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(widget.title),
           actions: [
-            OutlinedButton(onPressed: (){
-              setState(() {selectedItem = null; });
-            }, child: Text("Clear"))
-          ]
+            OutlinedButton(onPressed: () {MyApp.setLocale(context, Locale("de", "DE") ); }, child:Text("Deutsch")),
+            OutlinedButton(onPressed: () {MyApp.setLocale(context, Locale("fr", "CA") ); }, child:Text("Français")),
+            OutlinedButton(onPressed: () {MyApp.setLocale(context, Locale("en", "CA") ); }, child:Text("English")),
+            OutlinedButton(onPressed: () {MyApp.setLocale(context, Locale("zh", "CN") ); }, child:Text("中文")),
+          ],
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text(title),
         ),
-        // body:  myBody  // if landscape mode:
-        body: responsiveLayout(),
-        bottomNavigationBar: BottomNavigationBar(items: [
-          BottomNavigationBarItem(icon: Icon(Icons.camera), label: 'Camera'),
-          BottomNavigationBarItem(icon: Icon(Icons.add_call), label: 'Phone'),
-
-        ], onTap: (btnIndex){ },),
-      );
-    }
-
-    //This function gets run when you click the button
-    void buttonClicked(){
-
-    }
+        body:  responsiveLayout()
+    );
+  }
 
 
-    }
-
+}
 // flutter pub add floor_generator
 // flutter pub add -d build_runner
 
